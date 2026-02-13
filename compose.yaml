@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    env_file:
+      - .env
+    ports:
+      - '3306'
+  rabbitmq:
+    image: 'rabbitmq:latest'
+    environment:
+      - 'RABBITMQ_DEFAULT_PASS=mysecret'
+      - 'RABBITMQ_DEFAULT_USER=myuser'
+    ports:
+      - '5672'
