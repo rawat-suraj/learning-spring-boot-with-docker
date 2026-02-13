@@ -9,11 +9,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.suraj.learning_docker.exceptions.UserAlreadyExistsException;
 
-@RestController
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class.getName());
 
@@ -43,16 +43,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleOther(
-            Exception ex) {
-
-        logger.error("Unhandled exception: ", ex);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>(false, "Something went wrong", null));
-    }
-
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleOther(
             UsernameNotFoundException ex) {
@@ -69,5 +59,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(409)
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Object>> handleOther(
+            Exception ex) {
+
+        logger.error("Unhandled exception: ", ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>(false, "Something went wrong", null));
     }
 }

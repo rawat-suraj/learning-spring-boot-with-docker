@@ -1,14 +1,35 @@
 services:
+  app:
+    container_name: learning-docker-app
+    build: .
+    env_file:
+      - .env
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
   mysql:
+    container_name: learning-docker-mysql
     image: 'mysql:latest'
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     ports:
-      - '3306'
+      - '3306:3306'
   rabbitmq:
     image: 'rabbitmq:latest'
     environment:
       - 'RABBITMQ_DEFAULT_PASS=mysecret'
       - 'RABBITMQ_DEFAULT_USER=myuser'
     ports:
-      - '5672'
+      - '5672:5672'
+      - '15672:15672'
