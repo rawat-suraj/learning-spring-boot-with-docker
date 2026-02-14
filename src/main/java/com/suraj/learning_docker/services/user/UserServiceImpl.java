@@ -13,6 +13,7 @@ import com.suraj.learning_docker.exceptions.UserAlreadyExistsException;
 import com.suraj.learning_docker.mappers.UserMapper;
 import com.suraj.learning_docker.repositories.UserRepository;
 import com.suraj.learning_docker.security.CustomUserDetails;
+import com.suraj.learning_docker.services.mail.MailService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Override
     public UserDto getUserById(Long id) {
@@ -62,6 +64,9 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
 
         User savedUser = this.userRepository.save(newUser);
+
+        this.mailService.sendMail(savedUser.getEmail(), "Welcome to Learning Docker",
+                "Hi " + savedUser.getName() + ",\n\nWelcome to Learning Docker! We're glad to have you on board.\n\nBest regards,\nThe Learning Docker Team");
 
         return UserMapper.toDto(savedUser);
     }
